@@ -172,6 +172,8 @@ namespace PROBot.Scripting
             _lua.Globals["getActiveHeadbuttTrees"] = new Func<List<Dictionary<string, int>>>(GetActiveHeadbuttTrees);
             _lua.Globals["getActiveBerryTrees"] = new Func<List<Dictionary<string, int>>>(GetActiveBerryTrees);
             _lua.Globals["getDiscoverableItems"] = new Func<List<Dictionary<string, int>>>(GetDiscoverableItems);
+            _lua.Globals["getDiscoverablePokestops"] = new Func<List<Dictionary<string, int>>>(GetDiscoverablePokestops);
+            _lua.Globals["getDiscoverableAbandonedPokemon"] = new Func<List<Dictionary<string, int>>>(GetDiscoverableAbandonedPokemon);
             _lua.Globals["getNpcData"] = new Func<List<Dictionary<string, DynValue>>>(GetNpcData);
             _lua.Globals["getMapLinks"] = new Func<List<Dictionary<string, int>>>(GetMapLinks);
             _lua.Globals["getMapWidth"] = new Func<int>(GetMapWidth);
@@ -284,6 +286,7 @@ namespace PROBot.Scripting
             _lua.Globals["sortTeamRangeByLevelAscending"] = new Func<int, int, bool>(SortTeamRangeByLevelAscending);
             _lua.Globals["sortTeamRangeByLevelDescending"] = new Func<int, int, bool>(SortTeamRangeByLevelDescending);
             _lua.Globals["buyItem"] = new Func<string, int, bool>(BuyItem);
+            _lua.Globals["hasShopItem"] = new Func<string, bool>(HasShopItem);
             _lua.Globals["relearnMove"] = new Func<string, bool>(RelearnMove);
             _lua.Globals["usePC"] = new Func<bool>(UsePC);
             _lua.Globals["openPCBox"] = new Func<int, bool>(OpenPCBox);
@@ -536,6 +539,34 @@ namespace PROBot.Scripting
                 items.Add(npcData);
             }
             return items;
+        }
+
+        // API return an array of all pokestops on the current map. format : {index = {"x" = x, "y" = y}}
+        private List<Dictionary<string, int>> GetDiscoverablePokestops()
+        {
+            var pokestops = new List<Dictionary<string, int>>();
+            foreach (Npc npc in Bot.Game.Map.Npcs.Where(npc => npc.Type == 119 && npc.LosLength < 100))
+            {
+                var npcData = new Dictionary<string, int>();
+                npcData["x"] = npc.PositionX;
+                npcData["y"] = npc.PositionY;
+                pokestops.Add(npcData);
+            }
+            return pokestops;
+        }
+
+        // API return an array of all Abandoned Pokemon on the current map. format : {index = {"x" = x, "y" = y}}
+        private List<Dictionary<string, int>> GetDiscoverableAbandonedPokemon()
+        {
+            var abandonedPokemon = new List<Dictionary<string, int>>();
+            foreach (Npc npc in Bot.Game.Map.Npcs.Where(npc => npc.Type == 63 && npc.LosLength < 100))
+            {
+                var npcData = new Dictionary<string, int>();
+                npcData["x"] = npc.PositionX;
+                npcData["y"] = npc.PositionY;
+                abandonedPokemon.Add(npcData);
+            }
+            return abandonedPokemon;
         }
 
         // API: Returns npc data on current map, format : { { "x" = x , "y" = y, "type" = type }, {...}, ... }
@@ -2541,6 +2572,29 @@ namespace PROBot.Scripting
             }
 
             return ExecuteAction(Bot.Game.BuyItem(item.Id, quantity));
+        }
+
+        // API: Checks if shop has item.
+
+        private bool HasShopItem(string itemName)
+        {
+            if (!ValidateAction("hasShopItem", false)) return false;
+
+            if (Bot.Game.OpenedShop == null)
+            {
+                Fatal("error: hasShopItem can only be used when a shop is open.");
+            }
+
+            ShopItem item = Bot.Game.OpenedShop.Items.FirstOrDefault(i => i.Name.Equals(itemName, StringComparison.InvariantCultureIgnoreCase));
+
+            if (item == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         // API: Relearn a move from the move relearner NPC.
