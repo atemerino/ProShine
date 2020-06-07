@@ -343,6 +343,9 @@ namespace PROBot.Scripting
             _lua.Globals["logToFile"] = new Action<string, DynValue, bool>(LogToFile);
             _lua.Globals["readLinesFromFile"] = new Func<string, string[]>(ReadLinesFromFile);
 
+            // test
+            _lua.Globals["refreshPCBox"] = new Func<int, bool>(RefreshPCBox);
+
             foreach (string content in _libsContent)
             {
                 CallContent(content);
@@ -2545,11 +2548,28 @@ namespace PROBot.Scripting
         // API: Releases the specified pokemon in the PC.
         private bool ReleasePokemonFromPC(int boxId, int boxPokemonId)
         {
+            if (!ValidateAction("releasePokemonFromPC", false)) return false;
+
             if (!IsPCAccessValid("releasePokemonFromPC", boxId, boxPokemonId))
             {
                 return false;
             }
-            return ExecuteAction(Bot.Game.ReleasePokemonFromPC(boxId, boxPokemonId));
+            
+            if (Bot.Game.ReleasePokemonFromPC(boxId, boxPokemonId))
+            {
+                return ExecuteAction(Bot.Game.RefreshPCBox(boxId));
+            }
+            return false;
+        }
+
+        // API: Refresh PC Box
+        private bool RefreshPCBox(int boxId)
+        {
+            if (!Bot.Game.IsPCOpen || Bot.Game.IsPCBoxRefreshing)
+            {
+                return false;
+            }
+            return ExecuteAction(Bot.Game.RefreshPCBox(boxId));
         }
 
         // API: Buys the specified item from the opened shop.
