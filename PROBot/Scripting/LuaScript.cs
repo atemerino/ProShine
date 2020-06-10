@@ -2534,12 +2534,12 @@ namespace PROBot.Scripting
             }
             if (!Bot.Game.IsPCOpen)
             {
-                Fatal("error: releasePokemonFromTeam: cannot release a pokemon while the PC is closed: #" + pokemonUid + " (" + Bot.Game.Team[pokemonUid].Name + ").");
+                Fatal("error: releasePokemonFromTeam: cannot release a pokemon while the PC is closed: #" + pokemonUid + " (" + Bot.Game.Team[pokemonUid - 1].Name + ").");
                 return false;
             }
             if (Bot.Game.IsPCBoxRefreshing)
             {
-                Fatal("error: releasePokemonFromTeam: cannot release a pokemon while the PC box is refreshing: #" + pokemonUid + " (" + Bot.Game.Team[pokemonUid].Name + ").");
+                Fatal("error: releasePokemonFromTeam: cannot release a pokemon while the PC box is refreshing: #" + pokemonUid + " (" + Bot.Game.Team[pokemonUid - 1].Name + ").");
                 return false;
             }
             return ExecuteAction(Bot.Game.ReleasePokemonFromTeam(pokemonUid));
