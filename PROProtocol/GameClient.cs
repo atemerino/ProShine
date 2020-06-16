@@ -976,7 +976,7 @@ namespace PROProtocol
 
         public bool PurchaseMove(string moveName)
         {
-            if (MoveRelearner != null && MoveRelearner.Moves.Any(move => move.Name == moveName.ToLowerInvariant()))
+            if (MoveRelearner != null && MoveRelearner.Moves.Any(move => move.Name.ToLowerInvariant() == moveName.ToLowerInvariant()))
             {
                 _moveRelearnerTimeout.Set();
                 SendPurchaseMove(MoveRelearner.SelectedPokemonUid, moveName);
@@ -993,7 +993,11 @@ namespace PROProtocol
             {
                 if (!MoveRelearner.IsEgg)
                 {
-                    SendPacket("z|.|" + pokemonUid + "|.|" + moveName);
+                    int moveId = MovesManager.Instance.GetMoveId(moveName);
+                    if (moveId != -1)
+                    {
+                        SendPacket("z|.|" + pokemonUid + "|.|" + moveId);
+                    }
                 }
                 else
                 {
