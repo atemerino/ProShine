@@ -292,7 +292,7 @@ namespace PROProtocol
                     else
                     {
                         Npc battler = Map.Npcs.FirstOrDefault(npc => npc.CanBattle && npc.IsInLineOfSight(PlayerX, PlayerY));
-                        if (battler != null)
+                        if (battler != null && IsNpcInteractionsOn == true)
                         {
                             battler.CanBattle = false;
                             LogMessage?.Invoke("The NPC " + (battler.Name ?? battler.Id.ToString()) + " saw us, interacting...");
