@@ -1924,13 +1924,13 @@ namespace PROBot.Scripting
         // API: Enables npc interactions.
         private bool EnableNpcInteractions()
         {
-            return Bot.Game.IsNpcInteractionsOn = true;
+            return ExecuteAction(Bot.Game.NpcInteractionsOn());
         }
 
         // API: Disables npc interactions.
         private bool DisableNpcInteractions()
         {
-            return !(Bot.Game.IsNpcInteractionsOn = false);
+            return ExecuteAction(Bot.Game.NpcInteractionsOff());
         }
 
         private delegate int GetTimeDelegate(out int minute);

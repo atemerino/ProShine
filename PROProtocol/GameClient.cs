@@ -34,7 +34,7 @@ namespace PROProtocol
         public bool CanUseCut { get; private set; }
         public bool CanUseSmashRock { get; private set; }
         public bool IsPrivateMessageOn { get; private set; } = true;
-        public bool IsNpcInteractionsOn = true;
+        public bool IsNpcInteractionsOn { get; private set; } = true;
 
         public int Money { get; private set; }
         public int Coins { get; private set; }
@@ -599,6 +599,18 @@ namespace PROProtocol
         {
             IsPrivateMessageOn = false;
             SendPrivateMessageOff();
+            return true;
+        }
+
+        public bool NpcInteractionsOn()
+        {
+            IsNpcInteractionsOn = true;
+            return true;
+        }
+
+        public bool NpcInteractionsOff()
+        {
+            IsNpcInteractionsOn = false;
             return true;
         }
 
