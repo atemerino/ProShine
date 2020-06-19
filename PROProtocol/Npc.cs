@@ -66,7 +66,7 @@ namespace PROProtocol
         
         public bool IsMoving => Path.Length > 0 && Path.IndexOfAny(Movements) >= 0;
 
-        public bool CanBlockPlayer => Type != 10 && Type != 113;
+        public bool CanBlockPlayer => Type != 10 && Type != 113 && Type != 0;
         
         public Npc(int id, string name, bool isBattler, int type, int x, int y, Direction direction, int losLength, string path)
         {
